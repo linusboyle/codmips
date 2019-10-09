@@ -18,7 +18,8 @@ module automata(
     input wire clk,
     input wire rst,
     input wire[15:0] inputSW,
-    output reg[15:0] outputSW
+    output reg[15:0] outputSW,
+    output wire[1:0] st
 );
     reg[1:0] state;
     reg[15:0] inputA, inputB;
@@ -27,41 +28,45 @@ module automata(
     reg[15:0] res;
     reg flag;
     
-    always @ (posedge clk) begin
+    assign st = state;
+    
+    always @ (posedge clk or posedge rst) begin
         if (rst == 1'b1) begin
             state <= `ST_0;
             inputA <= 16'h0000;
             inputB <= 16'h0000;
-            op <= 4'h0;
         end else begin
             case (state)
                 `ST_0 : begin
                     state <= `ST_1;
                     inputA <= inputSW;
-                    outputSW <= inputSW; //debug
                 end
                 `ST_1 : begin
                     state <= `ST_2;
                     inputB <= inputSW;
-                    outputSW <= inputSW; //debug
                 end
                 `ST_2 : begin
                     state <= `ST_3;
-                    op <= inputSW;
-                    outputSW <= res;
                  end
                 `ST_3 : begin
                     state <= `ST_0;
-                    outputSW <= {15'd0, flag};
                 end
                 default: begin
                 	state <= `ST_0;
             		inputA <= 16'h0000;
             		inputB <= 16'h0000;
-            		op <= 4'h0;
             	end
             endcase
         end
+    end
+    
+    always @ (*) begin
+    	op <= inputSW[3:0];
+    	if (state == `ST_3) begin
+    		outputSW <= {15'd0, flag};
+    	end else begin
+    		outputSW <= res;
+    	end
     end
     
     always @ (*) begin
@@ -72,10 +77,16 @@ module automata(
         	flag <= 1'b0;
         	case (op)
         		`O_ADD: begin
-        			{flag, res} <= inputA + inputB;
+        			res <= inputA + inputB;
+        			if (((!inputA[15] && !inputB[15]) && res[15]) || ((inputA[15] && inputB[15]) && !res[15])) begin
+        				flag <= 1'b1;
+        			end
         		end
         		`O_SUB: begin
-        		    {flag, res} <= inputA - inputB;
+        		    res <= inputA - inputB;
+        		    if (((!inputA[15] && inputB[15]) && res[15]) || ((inputA[15] && !inputB[15]) && !res[15])) begin
+        				flag <= 1'b1;
+        			end
         		end
         		`O_AND: begin
         		    res <= inputA & inputB;
@@ -90,7 +101,7 @@ module automata(
         		    res <= inputA ^ inputB;
         		end
         		`O_SLL: begin
-        		    res <= inputA <<  inputB[3:0];
+        		    res <= inputA << inputB[3:0];
         		end
         		`O_SRL: begin
         		    res <= inputA >> inputB[3:0];
@@ -99,8 +110,11 @@ module automata(
         		    res <= ({16{inputA[15]}} << (5'd16 - {1'b0, inputB[3:0]}))
         		    		| inputA >> inputB[3:0];
         		end
+        		`O_ROL: begin
+        			res <= inputA << inputB[3:0] 
+        					| (inputA >> (5'd16 - {1'b0, inputB[3:0]}));
+        		end
         		default: begin
-        		    flag <= 1'b0;
             		res <= 16'h0000;
             	end
         	endcase
