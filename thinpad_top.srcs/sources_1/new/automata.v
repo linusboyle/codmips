@@ -18,7 +18,7 @@ module automata(
     input wire clk,
     input wire rst,
     input wire[15:0] inputSW,
-    output reg[15:0] outputSW
+    output wire[15:0] outputSW
 );
     reg[1:0] state;
     reg[15:0] inputA, inputB;
@@ -27,44 +27,47 @@ module automata(
     reg[15:0] res;
     reg flag;
     
-    always @ (posedge clk) begin
+    always @ (posedge clk or posedge rst) begin
         if (rst == 1'b1) begin
             state <= `ST_0;
-            inputA <= 16'h0000;
+            inputA <= inputSW;
             inputB <= 16'h0000;
-            op <= 4'h0;
+            //op <= 4'h0;
+            //outputSW <= 16'h0000;
         end else begin
             case (state)
                 `ST_0 : begin
+                    inputB <= inputSW;
+                    //outputSW <= inputSW; //debug
                     state <= `ST_1;
-                    inputA <= inputSW;
-                    outputSW <= inputSW; //debug
                 end
                 `ST_1 : begin
+                    //op <= inputSW[3:0];
+                    //outputSW <= inputSW; //debug
                     state <= `ST_2;
-                    inputB <= inputSW;
-                    outputSW <= inputSW; //debug
                 end
                 `ST_2 : begin
+                    //op <= inputSW[3:0];
+                    //outputSW <= res;
                     state <= `ST_3;
-                    op <= inputSW;
-                    outputSW <= res;
                  end
                 `ST_3 : begin
+                    //outputSW <= {15'd0, flag};
                     state <= `ST_0;
-                    outputSW <= {15'd0, flag};
+                    inputA <= inputSW;
                 end
-                default: begin
-                	state <= `ST_0;
-            		inputA <= 16'h0000;
-            		inputB <= 16'h0000;
-            		op <= 4'h0;
-            	end
             endcase
         end
     end
     
-    always @ (*) begin
+    always @(*) begin
+        op <= inputSW[3:0];
+    end
+    
+    assign outputSW = (state != `ST_3)?res:{15'd0, flag};
+    
+    always @(*)
+     begin
         if (rst == 1'b1) begin
             flag <= 1'b0;
             res <= 16'h0000;
@@ -99,10 +102,6 @@ module automata(
         		    res <= ({16{inputA[15]}} << (5'd16 - {1'b0, inputB[3:0]}))
         		    		| inputA >> inputB[3:0];
         		end
-        		default: begin
-        		    flag <= 1'b0;
-            		res <= 16'h0000;
-            	end
         	endcase
         end
     end
