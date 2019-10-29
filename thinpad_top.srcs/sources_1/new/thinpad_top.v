@@ -113,16 +113,21 @@ always@(posedge clk_10M or posedge reset_of_clk10M) begin
 end
 
 // 不使用内存、串口时，禁用其使能信号
-assign base_ram_ce_n = 1'b1;
-assign base_ram_oe_n = 1'b1;
-assign base_ram_we_n = 1'b1;
+//assign base_ram_ce_n = 1'b1;
+//assign base_ram_oe_n = 1'b1;
+//assign base_ram_we_n = 1'b1;
 
 assign ext_ram_ce_n = 1'b1;
 assign ext_ram_oe_n = 1'b1;
 assign ext_ram_we_n = 1'b1;
 
-assign uart_rdn = 1'b1;
-assign uart_wrn = 1'b1;
+uart_ram ins (clk_11M0592, reset_btn, dip_sw, uart_rdn, uart_wrn, 
+              uart_dataready, uart_tbre, uart_tsre, base_ram_data,
+              base_ram_addr, base_ram_be_n, base_ram_ce_n, base_ram_oe_n,
+              base_ram_we_n);
+
+//assign uart_rdn = 1'b1;
+//assign uart_wrn = 1'b1;
 
 // 数码管连接关系示意图，dpy1同理
 // p=dpy0[0] // ---a---
@@ -136,8 +141,8 @@ assign uart_wrn = 1'b1;
 //           // ---d---  p
 
 // 7段数码管译码器演示，将number用16进制显示在数码管上面
-wire[1:0] number;
-SEG7_LUT segL(.oSEG1(dpy0), .iDIG({2'd0, number})); //dpy0是低位数码管
+// wire[1:0] number;
+// SEG7_LUT segL(.oSEG1(dpy0), .iDIG({2'd0, number})); //dpy0是低位数码管
 
 //reg[15:0] led_bits;
 //assign leds = led_bits;
@@ -152,7 +157,7 @@ SEG7_LUT segL(.oSEG1(dpy0), .iDIG({2'd0, number})); //dpy0是低位数码管
 //	led_bits <= {led_bits[14:0],led_bits[15]};
 //end
 //end
-automata ALU(.clk(clock_btn), .rst(reset_btn), .inputSW(dip_sw[15:0]), .outputSW(leds), .st(number));
+//automata ALU(.clk(clock_btn), .rst(reset_btn), .inputSW(dip_sw[15:0]), .outputSW(leds), .st(number));
 
 //直连串口接收发送演示，从直连串口收到的数据再发送出去
 wire [7:0] ext_uart_rx;
@@ -168,7 +173,7 @@ async_receiver #(.ClkFrequency(50000000),.Baud(9600)) //接收模块，9600无�
         .RxD_clear(ext_uart_ready),       //清除接收标志
         .RxD_data(ext_uart_rx)             //接收到的一字节数据
     );
-    
+			
 always @(posedge clk_50M) begin //接收到缓冲区ext_uart_buffer
     if(ext_uart_ready)begin
         ext_uart_buffer <= ext_uart_rx;

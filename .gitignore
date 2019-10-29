@@ -3,6 +3,7 @@ thinpad_top.hw
 thinpad_top.runs
 thinpad_top.sim
 thinpad_top.ip_user_files/
+tmp
 
 thinpad_top.srcs/sources_1/ip/pll_example
 !thinpad_top.srcs/sources_1/ip/pll_example/pll_example.xci
