@@ -34,44 +34,54 @@
 
 module pc_reg(
 
-	input	wire										clk,
-	input wire										rst,
+    input wire clk,
+    input wire rst,
 
-	//来自控制模块的信息
-	input wire[5:0]               stall,
-	input wire                    flush,
-	input wire[`RegBus]           new_pc,
+	// 来自控制模块的信息（组合输出）
+    input wire[5:0] stall,
+    input wire flush,
+    input wire[`RegBus] new_pc,
 
-	//来自译码阶段的信息
-	input wire                    branch_flag_i,
-	input wire[`RegBus]           branch_target_address_i,
-	
-	output reg[`InstAddrBus]			pc,
-	output reg                    ce
+    // 来自译码阶段的信息（组合输出）
+    input wire branch_flag_i,
+    input wire[`RegBus] branch_target_address_i,
+
+    // 来自访存阶段的信息（寄存器输出）
+    input wire[`AluOpBus] mem_aluop,
+    input wire[`DataAddrBus] mem_mem_addr,
+
+    // 输出
+    output wire stallreq,
+    output reg[`InstAddrBus] pc,
+    output wire ce
 	
 );
+    reg reg_ce;
+
+    assign ce = reg_ce && (mem_aluop[7:5] != `EXE_RES_LOAD_STORE || mem_mem_addr[22] != pc[22]);
+    assign stallreq = !ce;
 
 	always @ (posedge clk) begin
-		if (ce == `ChipDisable) begin
-			pc <= 32'h00000000;
+		if (reg_ce == `ChipDisable) begin
+			pc <= `ZeroWord;
 		end else begin
-			if(flush == 1'b1) begin
+			if(flush == `True_v) begin
 				pc <= new_pc;
 			end else if(stall[0] == `NoStop) begin
 				if(branch_flag_i == `Branch) begin
 					pc <= branch_target_address_i;
 				end else begin
-		  		pc <= pc + 4'h4;
-		  	end
+                    pc <= pc + 4'h4;
+                end
 			end
 		end
 	end
 
 	always @ (posedge clk) begin
 		if (rst == `RstEnable) begin
-			ce <= `ChipDisable;
-		end else begin
-			ce <= `ChipEnable;
+			reg_ce <= `ChipDisable;
+        end else begin
+			reg_ce <= `ChipEnable;
 		end
 	end
 
