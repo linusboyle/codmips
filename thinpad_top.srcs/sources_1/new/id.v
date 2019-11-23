@@ -74,7 +74,7 @@ module id(
   assign imm_sll2_signedext = {{14{inst_i[15]}}, inst_i[15:0], 2'b00 };  
   assign stallreq = stallreq_for_reg1_loadrelate | stallreq_for_reg2_loadrelate;
   //---------------------------------------------------------//
-  assign pre_inst_is_load = ((ex_aluop_i == `EXE_LB_OP) || 
+  assign pre_inst_is_load = (ex_aluop_i == `EXE_LB_OP) || 
   													(ex_aluop_i == `EXE_LBU_OP)||
   													(ex_aluop_i == `EXE_LW_OP) ? 1'b1 : 1'b0;
   //---------------------------------------------------------//
@@ -180,36 +180,6 @@ module id(
 						end
 					endcase	
           case (op3)
-								`EXE_TEQ: begin
-									wreg_o <= `WriteDisable;		aluop_o <= `EXE_TEQ_OP;
-		  						alusel_o <= `EXE_RES_NOP;   reg1_read_o <= 1'b0;	reg2_read_o <= 1'b0;
-		  						instvalid <= `InstValid;
-		  					end
-		  					`EXE_TGE: begin
-									wreg_o <= `WriteDisable;		aluop_o <= `EXE_TGE_OP;
-		  						alusel_o <= `EXE_RES_NOP;   reg1_read_o <= 1'b1;	reg2_read_o <= 1'b1;
-		  						instvalid <= `InstValid;
-		  					end		
-		  					`EXE_TGEU: begin
-									wreg_o <= `WriteDisable;		aluop_o <= `EXE_TGEU_OP;
-		  						alusel_o <= `EXE_RES_NOP;   reg1_read_o <= 1'b1;	reg2_read_o <= 1'b1;
-		  						instvalid <= `InstValid;
-		  					end	
-		  					`EXE_TLT: begin
-									wreg_o <= `WriteDisable;		aluop_o <= `EXE_TLT_OP;
-		  						alusel_o <= `EXE_RES_NOP;   reg1_read_o <= 1'b1;	reg2_read_o <= 1'b1;
-		  						instvalid <= `InstValid;
-		  					end
-		  					`EXE_TLTU: begin
-									wreg_o <= `WriteDisable;		aluop_o <= `EXE_TLTU_OP;
-		  						alusel_o <= `EXE_RES_NOP;   reg1_read_o <= 1'b1;	reg2_read_o <= 1'b1;
-		  						instvalid <= `InstValid;
-		  					end	
-		  					`EXE_TNE: begin
-									wreg_o <= `WriteDisable;		aluop_o <= `EXE_TNE_OP;
-		  						alusel_o <= `EXE_RES_NOP;   reg1_read_o <= 1'b1;	reg2_read_o <= 1'b1;
-		  						instvalid <= `InstValid;
-		  					end
 		  					`EXE_SYSCALL: begin
 									wreg_o <= `WriteDisable;		aluop_o <= `EXE_SYSCALL_OP;
 		  						alusel_o <= `EXE_RES_NOP;   reg1_read_o <= 1'b0;	reg2_read_o <= 1'b0;
