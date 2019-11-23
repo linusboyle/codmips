@@ -47,7 +47,7 @@ module if_id(
     input wire stall_from_pc,
 
     output reg[`InstAddrBus] id_pc,
-    output reg[`InstBus] id_inst  
+    output reg[`InstBus] id_inst
 
 );
 
