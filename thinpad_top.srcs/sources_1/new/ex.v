@@ -67,7 +67,7 @@ module ex(
 	reg[`RegBus] arithmeticres;
 	reg[`DoubleRegBus] mulres;	
 	wire[`RegBus] result_sum;
-	reg trapassert;
+	wire trapassert;
 	reg ovassert;
 
   //aluop_o传递到访存阶段，用于加载、存储指令
