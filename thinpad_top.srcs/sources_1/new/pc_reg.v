@@ -46,7 +46,7 @@ module pc_reg(
     input wire branch_flag_i,
     input wire[`RegBus] branch_target_address_i,
 
-    // 来自访存阶段的信息（寄存器输出）
+    // 来自执行阶段的信息（寄存器输出）
     input wire[`AluOpBus] mem_aluop,
     input wire[`DataAddrBus] mem_mem_addr,
 
@@ -62,27 +62,21 @@ module pc_reg(
     assign stallreq = !ce;
 
 	always @ (posedge clk) begin
-		if (reg_ce == `ChipDisable) begin
-			pc <= `ZeroWord;
-		end else begin
-			if(flush == `True_v) begin
-				pc <= new_pc;
-			end else if(stall[0] == `NoStop) begin
-				if(branch_flag_i == `Branch) begin
-					pc <= branch_target_address_i;
-				end else begin
+        if(rst == `RstEnable) begin
+            reg_ce <= `ChipDisable;
+            pc <= `ZeroWord;
+        end else begin
+            reg_ce <= `ChipEnable;
+            if(flush == `True_v) begin
+                pc <= new_pc;
+            end else if(stall[0] == `NoStop && ce == `ChipEnable) begin
+                if(branch_flag_i == `Branch) begin
+                    pc <= branch_target_address_i;
+                end else begin
                     pc <= pc + 4'h4;
                 end
-			end
-		end
-	end
-
-	always @ (posedge clk) begin
-		if (rst == `RstEnable) begin
-			reg_ce <= `ChipDisable;
-        end else begin
-			reg_ce <= `ChipEnable;
-		end
+            end
+        end
 	end
 
 endmodule
