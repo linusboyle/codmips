@@ -161,9 +161,9 @@ module openmips(
  
   wire flush;
   wire[`RegBus] new_pc;
-  wire[`AluOpBus] mem_aluop,
-  wire[`DataAddrBus] mem_mem_addr,
-  wire stallreq,
+  wire[`AluOpBus] mem_aluop;
+  wire[`DataAddrBus] mem_mem_addr;
+  wire stallreq;
 
 	wire[`RegBus] cp0_count;
 	wire[`RegBus]	cp0_compare;
@@ -372,14 +372,10 @@ module openmips(
 	  .flush(flush),
 	  .mem_aluop(mem_aluop),
     .mem_mem_addr(mem_mem_addr),
-    .stallreq()
 		//来自执行阶段EX模块的信息	
 		.ex_wd(ex_wd_o),
 		.ex_wreg(ex_wreg_o),
 		.ex_wdata(ex_wdata_o),
-		.ex_hi(ex_hi_o),
-		.ex_lo(ex_lo_o),
-		.ex_whilo(ex_whilo_o),		
 
   	.ex_aluop(ex_aluop_o),
 		.ex_mem_addr(ex_mem_addr_o),
