@@ -195,6 +195,7 @@ module openmips(
  
   wire flush;
   wire[`RegBus] new_pc;
+  wire mem_aluop;
 
 	wire[`RegBus] cp0_count;
 	wire[`RegBus]	cp0_compare;
@@ -216,7 +217,10 @@ module openmips(
 		.branch_flag_i(id_branch_flag_o),
 		.branch_target_address_i(branch_target_address),		
 		.pc(pc),
-		.ce(rom_ce_o)	
+		.ce(rom_ce_o),
+    .mem_aluop(),
+    .mem_mem_addr(),
+    stallreq()	
 			
 	);
 	
