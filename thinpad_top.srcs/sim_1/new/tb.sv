@@ -46,27 +46,27 @@ wire uart_tbre;          //发送数据标志
 wire uart_tsre;          //数据发送完毕标志
 
 //Windows需要注意路径分隔符的转义，例如"D:\\foo\\bar.bin"
-parameter BASE_RAM_INIT_FILE = "/tmp/main.bin"; //BaseRAM初始化文件，请修改为实际的绝对路径
-parameter EXT_RAM_INIT_FILE = "/tmp/eram.bin";    //ExtRAM初始化文件，请修改为实际的绝对路径
+parameter BASE_RAM_INIT_FILE = "/tmp/baseram.bin"; //BaseRAM初始化文件，请修改为实际的绝对路径
+parameter EXT_RAM_INIT_FILE = "/tmp/extram.bin";    //ExtRAM初始化文件，请修改为实际的绝对路径
 parameter FLASH_INIT_FILE = "/tmp/kernel.elf";    //Flash初始化文件，请修改为实际的绝对路径
 
 assign rxd = 1'b1; //idle state
 
-initial begin 
-    //在这里可以自定义测试输入序列，例如：
-    dip_sw = 32'h1;
-    touch_btn = 0;
-    for (integer i = 0; i < 20; i = i+1) begin
-        #100; //等待100ns
-        clock_btn = 1; //按下手工时钟按钮
-        #100; //等待100ns
-        clock_btn = 0; //松开手工时钟按钮
-    end
-    // 模拟PC通过串口发送字符
-//    cpld.pc_send_byte(8'h32);
-//    #10000;
-//    cpld.pc_send_byte(8'h33);
-end
+//initial begin 
+//    //在这里可以自定义测试输入序列，例如：
+//    dip_sw = 32'h1;
+//    touch_btn = 0;
+//    for (integer i = 0; i < 20; i = i+1) begin
+//        #100; //等待100ns
+//        clock_btn = 1; //按下手工时钟按钮
+//        #100; //等待100ns
+//        clock_btn = 0; //松开手工时钟按钮
+//    end
+//    // 模拟PC通过串口发送字符
+////    cpld.pc_send_byte(8'h32);
+////    #10000;
+////    cpld.pc_send_byte(8'h33);
+//end
 
 // 待测试用户设计
 thinpad_top dut(
@@ -113,15 +113,15 @@ clock osc(
     .clk_50M    (clk_50M)
 );
 // CPLD 串口仿真模型
-cpld_model cpld(
-    .clk_uart(clk_11M0592),
-    .uart_rdn(uart_rdn),
-    .uart_wrn(uart_wrn),
-    .uart_dataready(uart_dataready),
-    .uart_tbre(uart_tbre),
-    .uart_tsre(uart_tsre),
-    .data(base_ram_data[7:0])
-);
+//cpld_model cpld(
+//    .clk_uart(clk_11M0592),
+//    .uart_rdn(uart_rdn),
+//    .uart_wrn(uart_wrn),
+//    .uart_dataready(uart_dataready),
+//    .uart_tbre(uart_tbre),
+//    .uart_tsre(uart_tsre),
+//    .data(base_ram_data[7:0])
+//);
 // BaseRAM 仿真模型
 sram_model base1(/*autoinst*/
             .DataIO(base_ram_data[15:0]),

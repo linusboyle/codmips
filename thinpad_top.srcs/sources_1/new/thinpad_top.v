@@ -80,8 +80,6 @@ module thinpad_top(
     output wire video_de           //行数据有效信号，用于区分消隐区
 );
 
-    /* =========== Demo code begin =========== */
-
     // PLL分频示例
     wire locked, clk_10M, clk_20M;
     pll_example clock_gen 
@@ -97,7 +95,7 @@ module thinpad_top(
      );
 
     reg reset_of_clk10M;
-      // 异步复位，同步释放
+    // 异步复位，同步释放
     always@(posedge clk_10M or negedge locked) begin
 	if(~locked) reset_of_clk10M <= 1'b1;
 	else        reset_of_clk10M <= 1'b0;
@@ -130,48 +128,42 @@ module thinpad_top(
 	.timer_int_o(timer_int_o)
     );
 
-always@(posedge clk_10M or posedge reset_of_clk10M) begin
-    if(reset_of_clk10M)begin
-        // Your Code
-    end
-    else begin
-        // Your Code
-    end
-end
+    //assign uart_rdn = 1'b1;
+    //assign uart_wrn = 1'b1;
 
-//assign uart_rdn = 1'b1;
-//assign uart_wrn = 1'b1;
+    // 数码管连接关系示意图，dpy1同理
+    // p=dpy0[0] // ---a---
+    // c=dpy0[1] // |     |
+    // d=dpy0[2] // f     b
+    // e=dpy0[3] // |     |
+    // b=dpy0[4] // ---g---
+    // a=dpy0[5] // |     |
+    // f=dpy0[6] // e     c
+    // g=dpy0[7] // |     |
+    //           // ---d---  p
 
-// 数码管连接关系示意图，dpy1同理
-// p=dpy0[0] // ---a---
-// c=dpy0[1] // |     |
-// d=dpy0[2] // f     b
-// e=dpy0[3] // |     |
-// b=dpy0[4] // ---g---
-// a=dpy0[5] // |     |
-// f=dpy0[6] // e     c
-// g=dpy0[7] // |     |
-//           // ---d---  p
+    // 7段数码管译码器演示，将number用16进制显示在数码管上面
+    // wire[1:0] number;
+    // SEG7_LUT segL(.oSEG1(dpy0), .iDIG({2'd0, number})); //dpy0是低位数码管
 
-// 7段数码管译码器演示，将number用16进制显示在数码管上面
-// wire[1:0] number;
-// SEG7_LUT segL(.oSEG1(dpy0), .iDIG({2'd0, number})); //dpy0是低位数码管
+    //reg[15:0] led_bits;
+    //assign leds = led_bits;
 
-//reg[15:0] led_bits;
-//assign leds = led_bits;
+    //always@(posedge clock_btn or posedge reset_btn) begin
+    //if(reset_btn)begin //复位按下，设置LED和数码管为初始值
+    //	number<=0;
+    //	led_bits <= 16'h1;
+    //end
+    //else begin //每次按下时钟按钮，数码管显示值加1，LED循环左移
+    //	number <= number+1;
+    //	led_bits <= {led_bits[14:0],led_bits[15]};
+    //end
+    //end
+    //automata ALU(.clk(clock_btn), .rst(reset_btn), .inputSW(dip_sw[15:0]), .outputSW(leds), .st(number));
 
-//always@(posedge clock_btn or posedge reset_btn) begin
-//if(reset_btn)begin //复位按下，设置LED和数码管为初始值
-//	number<=0;
-//	led_bits <= 16'h1;
-//end
-//else begin //每次按下时钟按钮，数码管显示值加1，LED循环左移
-//	number <= number+1;
-//	led_bits <= {led_bits[14:0],led_bits[15]};
-//end
-//end
-//automata ALU(.clk(clock_btn), .rst(reset_btn), .inputSW(dip_sw[15:0]), .outputSW(leds), .st(number));
-
+    /*
+	=========直连串口==========
+    */
     //直连串口接收发送演示，从直连串口收到的数据再发送出去
     wire [7:0] ext_uart_rx;
     reg  [7:0] ext_uart_buffer, ext_uart_tx;
@@ -214,7 +206,7 @@ end
 	);
 
     /*
-	    VGA
+	   ==========VGA==========
     */
     //图像输出演示，分辨率800x600@75Hz，像素时钟为50MHz
     wire [11:0] hdata;
@@ -230,6 +222,5 @@ end
 	.vsync(video_vsync),
 	.data_enable(video_de)
     );
-/* =========== Demo code end =========== */
 
 endmodule
