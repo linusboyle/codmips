@@ -13,7 +13,7 @@ module ex(
 	  input wire                    wreg_i,
 	  input wire[`RegBus]           inst_i,
 	  input wire[31:0]              excepttype_i,
-	  input wire[`RegBus]          current_inst_address_i,
+	  input wire[`RegBus]          	current_inst_address_i,
 
 
 
@@ -42,10 +42,7 @@ module ex(
 
 	  output reg[`RegAddrBus]       wd_o,
 	  output reg                    wreg_o,
-	  output reg[`RegBus]						wdata_o,
-
-
-
+	  output reg[`RegBus]		wdata_o,
 
 
 	  //下面新增的几个输出是为加载、存储指令准备的
@@ -57,7 +54,7 @@ module ex(
 	  output wire                   is_in_delayslot_o,
 	  output wire[`RegBus]          current_inst_address_o,
 
-	  output reg										stallreq
+	  output reg			stallreq
 
 );
 
@@ -159,9 +156,7 @@ module ex(
     always @ (*) begin
 	stallreq = 1'b0;
     end
-
-
-
+    
     //MFHI、MFLO、MOVN、MOVZ指令
     always @ (*) begin
 	if (rst == `RstEnable) begin
