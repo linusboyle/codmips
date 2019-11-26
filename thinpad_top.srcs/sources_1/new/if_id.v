@@ -43,24 +43,23 @@ module if_id(
     // 来自PC模块的信息（组合输出）
     input wire[`InstAddrBus] if_pc,
     input wire[`InstBus] if_inst,
-    input wire stall_from_pc,
 
     output reg[`InstAddrBus] id_pc,
     output reg[`InstBus] id_inst
 );
 	always @ (posedge clk) begin
 	    if (rst == `RstEnable) begin
-		id_pc <= `ZeroWord;
-		id_inst <= `ZeroWord;
+            id_pc <= `ZeroWord;
+            id_inst <= `ZeroWord;
 	    end else if(flush == 1'b1) begin
-		id_pc <= `ZeroWord;
-		id_inst <= `ZeroWord;
-	    end else if((stall[1] == `Stop && stall[2] == `NoStop) || stall_from_pc) begin
-		id_pc <= `ZeroWord;
-		id_inst <= `ZeroWord;
+            id_pc <= `ZeroWord;
+            id_inst <= `ZeroWord;
+	    end else if(stall[1] == `Stop && stall[2] == `NoStop) begin
+            id_pc <= `ZeroWord;
+            id_inst <= `ZeroWord;
 	    end else if(stall[1] == `NoStop) begin
-		id_pc <= if_pc;
-		id_inst <= if_inst;
+            id_pc <= if_pc;
+            id_inst <= if_inst;
 	    end
 	end
 endmodule

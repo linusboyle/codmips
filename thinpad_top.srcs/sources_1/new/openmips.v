@@ -193,8 +193,8 @@ module openmips(
 		   .branch_target_address_i(branch_target_address),
 		   .pc(pc),
 		   .ce(pc_ce),
-		   .mem_aluop(ex_aluop_o),
-		   .mem_mem_addr(ex_mem_addr_o),
+		   .mem_aluop(mem_aluop_i),
+		   .mem_mem_addr(mem_mem_addr_i),
 		   .stallreq(stallreq_pc)
     );
 
@@ -232,7 +232,6 @@ module openmips(
 		 .stall(stall),
 		 .flush(flush),
 		 .if_pc(pc),
-		 .stall_from_pc(stallreq_pc),
 		 .if_inst(pc_data),
 		 .id_pc(id_pc_i),
 		 .id_inst(id_inst_i)
@@ -526,6 +525,7 @@ module openmips(
 	       .cp0_epc_i(latest_epc),
 
 	       .stallreq_from_id(stallreq_from_id),
+	       .stallreq_from_pc(stallreq_pc),
 
 	       //来自执行阶段的暂停请求
 	       .stallreq_from_ex(stallreq_from_ex),
