@@ -120,12 +120,16 @@ module ram_ctrl(
 
 	    if (pc_ce == `ChipEnable) begin
 		if (pc_addr[22] == 1'b1) begin
+			ext_wr <= 1'b0;
 		    ext_ram_ce_n <= 1'b0;
 		    ext_ram_oe_n <= 1'b0;
+		    ext_ram_we_n <= 1'b1;
 		    ext_ram_addr <= pc_addr[21:2];
 		end else begin
+			base_wr <= 1'b0;
 		    base_ram_ce_n <= 1'b0;
 		    base_ram_oe_n <= 1'b0;
+		    base_ram_we_n <= 1'b1;
 		    base_ram_addr <= pc_addr[21:2];
 		end
 	    end
