@@ -58,7 +58,7 @@ module pc_reg(
 );
     reg reg_ce;
 
-    assign ce = reg_ce && (mem_aluop[7:5] != `EXE_RES_LOAD_STORE || mem_mem_addr[22] != pc[22]);
+    assign ce = reg_ce && (mem_aluop[7:5] != `EXE_RES_LOAD_STORE || mem_mem_addr[22] != pc[22]) && (mem_mem_addr != 32'hBFD003F8);
     assign stallreq = !ce;
 
 	always @ (posedge clk) begin

@@ -139,20 +139,20 @@ module mem(
                     mem_ce_o <= `ChipEnable;
                     case (mem_addr_i[1:0])
                         2'b00:    begin
-                            wdata_o <= {{24{mem_data_i[31]}},mem_data_i[31:24]};
-                            mem_sel_o <= 4'b1000;
+                            wdata_o <= {{24{mem_data_i[7]}},mem_data_i[7:0]};
+                            mem_sel_o <= 4'b0001;
                         end
                         2'b01:    begin
-                            wdata_o <= {{24{mem_data_i[23]}},mem_data_i[23:16]};
-                            mem_sel_o <= 4'b0100;
-                        end
-                        2'b10:    begin
                             wdata_o <= {{24{mem_data_i[15]}},mem_data_i[15:8]};
                             mem_sel_o <= 4'b0010;
                         end
+                        2'b10:    begin
+                            wdata_o <= {{24{mem_data_i[23]}},mem_data_i[23:16]};
+                            mem_sel_o <= 4'b0100;
+                        end
                         2'b11:    begin
-                            wdata_o <= {{24{mem_data_i[7]}},mem_data_i[7:0]};
-                            mem_sel_o <= 4'b0001;
+                            wdata_o <= {{24{mem_data_i[31]}},mem_data_i[31:24]};
+                            mem_sel_o <= 4'b1000;
                         end
                         default:    begin
                             wdata_o <= `ZeroWord;
@@ -165,20 +165,20 @@ module mem(
                     mem_ce_o <= `ChipEnable;
                     case (mem_addr_i[1:0])
                         2'b00:    begin
-                            wdata_o <= {{24{1'b0}},mem_data_i[31:24]};
-                            mem_sel_o <= 4'b1000;
+                            wdata_o <= {{24{1'b0}},mem_data_i[7:0]};
+                            mem_sel_o <= 4'b0001;
                         end
                         2'b01:    begin
-                            wdata_o <= {{24{1'b0}},mem_data_i[23:16]};
-                            mem_sel_o <= 4'b0100;
-                        end
-                        2'b10:    begin
                             wdata_o <= {{24{1'b0}},mem_data_i[15:8]};
                             mem_sel_o <= 4'b0010;
                         end
+                        2'b10:    begin
+                            wdata_o <= {{24{1'b0}},mem_data_i[23:16]};
+                            mem_sel_o <= 4'b0100;
+                        end
                         2'b11:    begin
-                            wdata_o <= {{24{1'b0}},mem_data_i[7:0]};
-                            mem_sel_o <= 4'b0001;
+                            wdata_o <= {{24{1'b0}},mem_data_i[31:24]};
+                            mem_sel_o <= 4'b1000;
                         end
                         default:    begin
                             wdata_o <= `ZeroWord;
@@ -199,16 +199,16 @@ module mem(
                     mem_ce_o <= `ChipEnable;
                     case (mem_addr_i[1:0])
                         2'b00:    begin
-                            mem_sel_o <= 4'b1000;
+                            mem_sel_o <= 4'b0001;
                         end
                         2'b01:    begin
-                            mem_sel_o <= 4'b0100;
-                        end
-                        2'b10:    begin
                             mem_sel_o <= 4'b0010;
                         end
+                        2'b10:    begin
+                            mem_sel_o <= 4'b0100;
+                        end
                         2'b11:    begin
-                            mem_sel_o <= 4'b0001;
+                            mem_sel_o <= 4'b1000;
                         end
                         default:    begin
                             mem_sel_o <= 4'b0000;

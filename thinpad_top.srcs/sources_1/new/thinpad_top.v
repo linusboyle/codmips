@@ -125,6 +125,12 @@ module thinpad_top(
 	.ext_ram_oe_n(ext_ram_oe_n),
 	.ext_ram_we_n(ext_ram_we_n),
 
+	.uart_rdn(uart_rdn),
+	.uart_wrn(uart_wrn),
+	.uart_dataready(uart_dataready),
+	.uart_tbre(uart_tbre),
+	.uart_tsre(uart_tsre),
+
 	.timer_int_o(timer_int_o)
     );
 

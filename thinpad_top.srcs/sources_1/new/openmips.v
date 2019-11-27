@@ -55,6 +55,12 @@ module openmips(
 		output wire ext_ram_oe_n,       //ExtRAM读使能，低有效
 		output wire ext_ram_we_n,       //ExtRAM写使能，低有效
 
+		output wire uart_rdn,         //读串口信号，低有效
+		output wire uart_wrn,         //写串口信号，低有效
+		input wire uart_dataready,    //串口数据准备好
+		input wire uart_tbre,         //发送数据标志
+		input wire uart_tsre,         //数据发送完毕标志
+
 		output wire                    timer_int_o
 );
 
@@ -222,7 +228,13 @@ module openmips(
 		.ext_ram_be_n(ext_ram_be_n),
 		.ext_ram_ce_n(ext_ram_ce_n),
 		.ext_ram_oe_n(ext_ram_oe_n),
-		.ext_ram_we_n(ext_ram_we_n)
+		.ext_ram_we_n(ext_ram_we_n),
+
+		.uart_rdn(uart_rdn),
+		.uart_wrn(uart_wrn),
+		.uart_dataready(uart_dataready),
+		.uart_tbre(uart_tbre),
+		.uart_tsre(uart_tsre)
     );
 
     //IF/ID模块例化

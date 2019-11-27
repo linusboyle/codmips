@@ -11,15 +11,21 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="1328103000fs"></ZoomStartTime>
-      <ZoomEndTime time="2074103001fs"></ZoomEndTime>
-      <Cursor1Time time="2012895000fs"></Cursor1Time>
+      <ZoomStartTime time="59148713000fs"></ZoomStartTime>
+      <ZoomEndTime time="60193713001fs"></ZoomEndTime>
+      <Cursor1Time time="60190000000fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="166"></NameColumnWidth>
-      <ValueColumnWidth column_width="80"></ValueColumnWidth>
+      <ValueColumnWidth column_width="64"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="29" />
+   <WVObjectSize size="36" />
+   <wave_markers>
+      <marker label="" time="2190000000" />
+      <marker label="" time="2590000000" />
+      <marker label="" time="24390000000" />
+      <marker label="" time="60190000000" />
+   </wave_markers>
    <wvobject type="logic" fp_name="/tb/dut/mycpu/clk">
       <obj_property name="ElementShortName">clk</obj_property>
       <obj_property name="ObjectShortName">clk</obj_property>
@@ -31,6 +37,11 @@
    <wvobject type="array" fp_name="/tb/dut/mycpu/stall">
       <obj_property name="ElementShortName">stall[5:0]</obj_property>
       <obj_property name="ObjectShortName">stall[5:0]</obj_property>
+      <obj_property name="Radix">BINARYRADIX</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb/dut/mycpu/mem_excepttype_o">
+      <obj_property name="ElementShortName">mem_excepttype_o[31:0]</obj_property>
+      <obj_property name="ObjectShortName">mem_excepttype_o[31:0]</obj_property>
    </wvobject>
    <wvobject type="array" fp_name="/tb/dut/mycpu/pc">
       <obj_property name="ElementShortName">pc[31:0]</obj_property>
@@ -158,6 +169,14 @@
       <obj_property name="CustomSignalColor">#00FFFF</obj_property>
       <obj_property name="UseCustomSignalColor">true</obj_property>
    </wvobject>
+   <wvobject type="logic" fp_name="/tb/dut/mycpu/rc/ext_ram_ce_n">
+      <obj_property name="ElementShortName">ext_ram_ce_n</obj_property>
+      <obj_property name="ObjectShortName">ext_ram_ce_n</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb/dut/mycpu/rc/ext_ram_we_n">
+      <obj_property name="ElementShortName">ext_ram_we_n</obj_property>
+      <obj_property name="ObjectShortName">ext_ram_we_n</obj_property>
+   </wvobject>
    <wvobject type="array" fp_name="/tb/dut/mycpu/mem_data_i">
       <obj_property name="ElementShortName">mem_data_i[31:0]</obj_property>
       <obj_property name="ObjectShortName">mem_data_i[31:0]</obj_property>
@@ -182,11 +201,30 @@
       <obj_property name="ObjectShortName">wb_wd_i[4:0]</obj_property>
       <obj_property name="CustomSignalColor">#FFFF00</obj_property>
       <obj_property name="UseCustomSignalColor">true</obj_property>
+      <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
    </wvobject>
    <wvobject type="array" fp_name="/tb/dut/mycpu/wb_wdata_i">
       <obj_property name="ElementShortName">wb_wdata_i[31:0]</obj_property>
       <obj_property name="ObjectShortName">wb_wdata_i[31:0]</obj_property>
       <obj_property name="CustomSignalColor">#FFFF00</obj_property>
       <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb/dut/mycpu/rc/st">
+      <obj_property name="ElementShortName">st[1:0]</obj_property>
+      <obj_property name="ObjectShortName">st[1:0]</obj_property>
+      <obj_property name="Radix">BINARYRADIX</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb/dut/mycpu/rc/uart_rdn">
+      <obj_property name="ElementShortName">uart_rdn</obj_property>
+      <obj_property name="ObjectShortName">uart_rdn</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb/dut/mycpu/rc/uart_wrn">
+      <obj_property name="ElementShortName">uart_wrn</obj_property>
+      <obj_property name="ObjectShortName">uart_wrn</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb/dut/mycpu/rc/mem_sel">
+      <obj_property name="ElementShortName">mem_sel[3:0]</obj_property>
+      <obj_property name="ObjectShortName">mem_sel[3:0]</obj_property>
+      <obj_property name="Radix">BINARYRADIX</obj_property>
    </wvobject>
 </wave_config>
