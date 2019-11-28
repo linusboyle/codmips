@@ -81,11 +81,11 @@ module thinpad_top(
 );
 
     // PLL分频示例
-    wire locked, clk_10M, clk_20M;
+    wire locked, clk_main, clk_20M;
     pll_example clock_gen 
      (
       // Clock out ports
-      .clk_out1(clk_10M), // 时钟输出1，频率在IP配置界面中设置
+      .clk_out1(clk_main), // 时钟输出1，频率在IP配置界面中设置
       .clk_out2(clk_20M), // 时钟输出2，频率在IP配置界面中设置
       // Status and control signals
       .reset(reset_btn), // PLL复位输入
@@ -94,11 +94,11 @@ module thinpad_top(
       .clk_in1(clk_50M) // 外部时钟输入
      );
 
-    reg reset_of_clk10M;
+    reg reset_of_clkmain;
     // 异步复位，同步释放
-    always@(posedge clk_10M or negedge locked) begin
-	if(~locked) reset_of_clk10M <= 1'b1;
-	else        reset_of_clk10M <= 1'b0;
+    always@(posedge clk_main or negedge locked) begin
+	if(~locked) reset_of_clkmain <= 1'b1;
+	else        reset_of_clkmain <= 1'b0;
     end
 
     wire [5:0] int_i;
@@ -106,8 +106,8 @@ module thinpad_top(
     wire timer_int_o;
 
     openmips mycpu (
-	.clk(clk_10M),
-	.rst(reset_of_clk10M),
+	.clk(clk_main),
+	.rst(reset_of_clkmain),
 
 	.int_i(int_i),
 
@@ -135,6 +135,8 @@ module thinpad_top(
     );
 
 	assign leds = 16'h0000;
+	assign dpy0 = 8'h00;
+	assign dpy1 = 8'h00;
     //assign uart_rdn = 1'b1;
     //assign uart_wrn = 1'b1;
 

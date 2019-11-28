@@ -11,15 +11,15 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="59148713000fs"></ZoomStartTime>
-      <ZoomEndTime time="60193713001fs"></ZoomEndTime>
-      <Cursor1Time time="60190000000fs"></Cursor1Time>
+      <ZoomStartTime time="13201500000fs"></ZoomStartTime>
+      <ZoomEndTime time="13343700001fs"></ZoomEndTime>
+      <Cursor1Time time="13470000000fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
       <NameColumnWidth column_width="166"></NameColumnWidth>
-      <ValueColumnWidth column_width="64"></ValueColumnWidth>
+      <ValueColumnWidth column_width="60"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="36" />
+   <WVObjectSize size="35" />
    <wave_markers>
       <marker label="" time="2190000000" />
       <marker label="" time="2590000000" />
@@ -208,11 +208,6 @@
       <obj_property name="ObjectShortName">wb_wdata_i[31:0]</obj_property>
       <obj_property name="CustomSignalColor">#FFFF00</obj_property>
       <obj_property name="UseCustomSignalColor">true</obj_property>
-   </wvobject>
-   <wvobject type="array" fp_name="/tb/dut/mycpu/rc/st">
-      <obj_property name="ElementShortName">st[1:0]</obj_property>
-      <obj_property name="ObjectShortName">st[1:0]</obj_property>
-      <obj_property name="Radix">BINARYRADIX</obj_property>
    </wvobject>
    <wvobject type="logic" fp_name="/tb/dut/mycpu/rc/uart_rdn">
       <obj_property name="ElementShortName">uart_rdn</obj_property>
