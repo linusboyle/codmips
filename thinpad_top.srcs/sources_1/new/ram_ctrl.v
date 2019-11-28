@@ -84,8 +84,8 @@ module ram_ctrl(
     assign pc_data = pc_ce ? pc_bus : `ZeroWord;
     assign mem_data_o = mem_oe ? mem_bus : `ZeroWord;
 
-    // No.4 hardware interrupt
-    assign int_o = {1'b0, uart_dataready, 4'b0000};
+    // No.2 hardware interrupt
+    assign int_o = {3'b000, uart_dataready, 2'b00};
 
     always @ (*) begin
 	base_ram_ce_n <= 1'b1;
