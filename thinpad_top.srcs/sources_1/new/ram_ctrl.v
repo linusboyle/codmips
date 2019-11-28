@@ -67,47 +67,47 @@ module ram_ctrl(
 	ext_bus;
     reg base_wr,
 	ext_wr;
-    wire uart_free;
+//    wire uart_free;
 
-    parameter st_write = 2'b00;
-    parameter st_tbre = 2'b01;
-    parameter st_read = 2'b10;
-    parameter st_wait = 2'b11;
+//    parameter st_write = 2'b00;
+//    parameter st_tbre = 2'b01;
+//    parameter st_read = 2'b10;
+//    parameter st_wait = 2'b11;
 
-    reg[1:0] st;
+//    reg[1:0] st;
 
-    always @ (*) begin
-	if (rst == `RstEnable) begin
-	    st <= st_wait;
-	end else begin
-	    case (st)
-		st_wait : begin
-			if (uart_wrn == 1'b0) begin
-			    st <= st_write;
-			end else if (uart_rdn == 1'b0) begin
-			    st <= st_read;
-			end
-		    end
-		st_write : begin
-			if (uart_tbre == 1'b1) begin
-			    st <= uart_tbre;
-			end
-		    end
-		st_tbre : begin
-			if (uart_tsre == 1'b1) begin
-			    st <= st_wait;
-			end
-		    end
-		st_read : begin
-			if (uart_rdn == 1'b1) begin
-			    st <= st_wait;
-			end
-		    end
-	    endcase
-	end
-    end
+//    always @ (*) begin
+//	if (rst == `RstEnable) begin
+//	    st <= st_wait;
+//	end else begin
+//	    case (st)
+//		st_wait : begin
+//			if (uart_wrn == 1'b0) begin
+//			    st <= st_write;
+//			end else if (uart_rdn == 1'b0) begin
+//			    st <= st_read;
+//			end
+//		    end
+//		st_write : begin
+//			if (uart_tbre == 1'b1) begin
+//			    st <= uart_tbre;
+//			end
+//		    end
+//		st_tbre : begin
+//			if (uart_tsre == 1'b1) begin
+//			    st <= st_wait;
+//			end
+//		    end
+//		st_read : begin
+//			if (uart_rdn == 1'b1) begin
+//			    st <= st_wait;
+//			end
+//		    end
+//	    endcase
+//	end
+//    end
 
-    assign uart_free = (st == st_wait) ? 1'b1 : 1'b0;
+//    assign uart_free = (st == st_wait) ? 1'b1 : 1'b0;
 
     wire[7:0] uart_data;
     wire[31:0] uart_status;
@@ -115,7 +115,7 @@ module ram_ctrl(
     assign base_ram_data = base_wr ? base_bus : 32'bz;
     assign ext_ram_data = ext_wr ? ext_bus : 32'bz;
     assign uart_data = base_ram_data[7:0];
-    assign uart_status = {30'h0, uart_dataready, uart_free};
+    assign uart_status = {30'h0, uart_dataready, uart_tsre & uart_tbre};
 
     assign mem_oe = mem_ce & ~mem_we;
     assign sel = mem_we & mem_ce ? ~mem_sel : 4'b0;

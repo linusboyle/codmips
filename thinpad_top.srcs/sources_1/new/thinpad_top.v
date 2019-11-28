@@ -134,6 +134,7 @@ module thinpad_top(
 	.timer_int_o(timer_int_o)
     );
 
+	assign leds = 16'h0000;
     //assign uart_rdn = 1'b1;
     //assign uart_wrn = 1'b1;
 
