@@ -55,7 +55,9 @@ module ram_ctrl(
 		output reg uart_wrn,         //写串口信号，低有效
 		input wire uart_dataready,   //串口数据准备好
 		input wire uart_tbre,        //发送数据标志
-		input wire uart_tsre         //数据发送完毕标志
+		input wire uart_tsre,        //数据发送完毕标志
+
+		output wire[5:0] int_o
 );
 
     wire mem_oe,
@@ -67,47 +69,6 @@ module ram_ctrl(
 	ext_bus;
     reg base_wr,
 	ext_wr;
-//    wire uart_free;
-
-//    parameter st_write = 2'b00;
-//    parameter st_tbre = 2'b01;
-//    parameter st_read = 2'b10;
-//    parameter st_wait = 2'b11;
-
-//    reg[1:0] st;
-
-//    always @ (*) begin
-//	if (rst == `RstEnable) begin
-//	    st <= st_wait;
-//	end else begin
-//	    case (st)
-//		st_wait : begin
-//			if (uart_wrn == 1'b0) begin
-//			    st <= st_write;
-//			end else if (uart_rdn == 1'b0) begin
-//			    st <= st_read;
-//			end
-//		    end
-//		st_write : begin
-//			if (uart_tbre == 1'b1) begin
-//			    st <= uart_tbre;
-//			end
-//		    end
-//		st_tbre : begin
-//			if (uart_tsre == 1'b1) begin
-//			    st <= st_wait;
-//			end
-//		    end
-//		st_read : begin
-//			if (uart_rdn == 1'b1) begin
-//			    st <= st_wait;
-//			end
-//		    end
-//	    endcase
-//	end
-//    end
-
-//    assign uart_free = (st == st_wait) ? 1'b1 : 1'b0;
 
     wire[7:0] uart_data;
     wire[31:0] uart_status;
@@ -122,6 +83,9 @@ module ram_ctrl(
 
     assign pc_data = pc_ce ? pc_bus : `ZeroWord;
     assign mem_data_o = mem_oe ? mem_bus : `ZeroWord;
+
+    // No.4 hardware interrupt
+    assign int_o = {1'b0, uart_dataready, 4'b0000};
 
     always @ (*) begin
 	base_ram_ce_n <= 1'b1;

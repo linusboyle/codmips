@@ -37,8 +37,6 @@ module openmips(
 		input wire	clk,
 		input wire	rst,
 
-		input wire[5:0]                int_i,
-
 		//BaseRAM信号
 		inout wire[31:0] base_ram_data,  //BaseRAM数据，低8位与CPLD串口控制器共享
 		output wire[19:0] base_ram_addr, //BaseRAM地址
@@ -103,6 +101,7 @@ module openmips(
     wire[`RegBus] ex_reg2_o;
     wire ex_cp0_reg_we_o;
     wire[4:0] ex_cp0_reg_write_addr_o;
+    wire[2:0] ex_cp0_reg_write_sel_o;
     wire[`RegBus] ex_cp0_reg_data_o;
     wire[31:0] ex_excepttype_o;
     wire[`RegBus] ex_current_inst_address_o;
@@ -117,6 +116,7 @@ module openmips(
     wire[`RegBus] mem_reg2_i;
     wire mem_cp0_reg_we_i;
     wire[4:0] mem_cp0_reg_write_addr_i;
+    wire[2:0] mem_cp0_reg_write_sel_i;
     wire[`RegBus] mem_cp0_reg_data_i;
     wire[31:0] mem_excepttype_i;
     wire mem_is_in_delayslot_i;
@@ -128,6 +128,7 @@ module openmips(
     wire[`RegBus] mem_wdata_o;
     wire mem_cp0_reg_we_o;
     wire[4:0] mem_cp0_reg_write_addr_o;
+    wire[2:0] mem_cp0_reg_write_sel_o;
     wire[`RegBus] mem_cp0_reg_data_o;
     wire[31:0] mem_excepttype_o;
     wire mem_is_in_delayslot_o;
@@ -139,6 +140,7 @@ module openmips(
     wire[`RegBus] wb_wdata_i;
     wire wb_cp0_reg_we_i;
     wire[4:0] wb_cp0_reg_write_addr_i;
+    wire[2:0] wb_cp0_reg_write_sel_i;
     wire[`RegBus] wb_cp0_reg_data_i;
     wire[31:0] wb_excepttype_i;
     wire wb_is_in_delayslot_i;
@@ -162,8 +164,10 @@ module openmips(
     wire stallreq_from_id;
     wire stallreq_from_ex;
 
+    // CP0 data read
     wire[`RegBus] cp0_data_o;
     wire[4:0] cp0_raddr_i;
+    wire[2:0] cp0_rsel_i;
 
     wire flush;
     wire[`RegBus] new_pc;
@@ -171,15 +175,21 @@ module openmips(
     wire pc_ce;
     wire[`InstBus] pc_data;
 
-    wire[`RegBus]   cp0_count;
+    wire[5:0] int_i;
+
+    // CP0 output
+    wire[`RegBus]   	cp0_count;
     wire[`RegBus]	cp0_compare;
     wire[`RegBus]	cp0_status;
     wire[`RegBus]	cp0_cause;
     wire[`RegBus]	cp0_epc;
     wire[`RegBus]	cp0_config;
     wire[`RegBus]	cp0_prid;
+    wire[`RegBus]	cp0_ebase;
 
+    // CP0 latest value; to CTRL
     wire[`RegBus] 	latest_epc;
+    wire[`RegBus] 	latest_ebase;
 
     wire[`InstAddrBus] mem_addr_rc;
     wire mem_ce_rc;
@@ -234,7 +244,9 @@ module openmips(
 		.uart_wrn(uart_wrn),
 		.uart_dataready(uart_dataready),
 		.uart_tbre(uart_tbre),
-		.uart_tsre(uart_tsre)
+		.uart_tsre(uart_tsre),
+
+		.int_o(int_i)
     );
 
     //IF/ID模块例化
@@ -374,19 +386,23 @@ module openmips(
 	   //访存阶段的指令是否要写CP0，用来检测数据相关
 	   .mem_cp0_reg_we(mem_cp0_reg_we_o),
 	   .mem_cp0_reg_write_addr(mem_cp0_reg_write_addr_o),
+	   .mem_cp0_reg_write_sel(mem_cp0_reg_write_sel_o),
 	   .mem_cp0_reg_data(mem_cp0_reg_data_o),
 
 	   //回写阶段的指令是否要写CP0，用来检测数据相关
 	   .wb_cp0_reg_we(wb_cp0_reg_we_i),
 	   .wb_cp0_reg_write_addr(wb_cp0_reg_write_addr_i),
+	   .wb_cp0_reg_write_sel(wb_cp0_reg_write_sel_i),
 	   .wb_cp0_reg_data(wb_cp0_reg_data_i),
 
 	   .cp0_reg_data_i(cp0_data_o),
 	   .cp0_reg_read_addr_o(cp0_raddr_i),
+	   .cp0_reg_read_sel_o(cp0_rsel_i),
 
 	   //向下一流水级传递，用于写CP0中的寄存器
 	   .cp0_reg_we_o(ex_cp0_reg_we_o),
 	   .cp0_reg_write_addr_o(ex_cp0_reg_write_addr_o),
+	   .cp0_reg_write_sel_o(ex_cp0_reg_write_sel_o),
 	   .cp0_reg_data_o(ex_cp0_reg_data_o),
 
 	   //EX模块的输出到EX/MEM模块信息
@@ -424,6 +440,7 @@ module openmips(
 
 		   .ex_cp0_reg_we(ex_cp0_reg_we_o),
 		   .ex_cp0_reg_write_addr(ex_cp0_reg_write_addr_o),
+		   .ex_cp0_reg_write_sel(ex_cp0_reg_write_sel_o),
 		   .ex_cp0_reg_data(ex_cp0_reg_data_o),
 
 		   .ex_excepttype(ex_excepttype_o),
@@ -437,6 +454,7 @@ module openmips(
 
 		   .mem_cp0_reg_we(mem_cp0_reg_we_i),
 		   .mem_cp0_reg_write_addr(mem_cp0_reg_write_addr_i),
+		   .mem_cp0_reg_write_sel(mem_cp0_reg_write_sel_i),
 		   .mem_cp0_reg_data(mem_cp0_reg_data_i),
 
 		   .mem_aluop(mem_aluop_i),
@@ -466,6 +484,7 @@ module openmips(
 
 	     .cp0_reg_we_i(mem_cp0_reg_we_i),
 	     .cp0_reg_write_addr_i(mem_cp0_reg_write_addr_i),
+	     .cp0_reg_write_sel_i(mem_cp0_reg_write_sel_i),
 	     .cp0_reg_data_i(mem_cp0_reg_data_i),
 
 	     .excepttype_i(mem_excepttype_i),
@@ -475,14 +494,17 @@ module openmips(
 	     .cp0_status_i(cp0_status),
 	     .cp0_cause_i(cp0_cause),
 	     .cp0_epc_i(cp0_epc),
-
+	     .cp0_ebase_i(cp0_ebase),
+	     
 	     //回写阶段的指令是否要写CP0，用来检测数据相关
 	     .wb_cp0_reg_we(wb_cp0_reg_we_i),
 	     .wb_cp0_reg_write_addr(wb_cp0_reg_write_addr_i),
+	     .wb_cp0_reg_write_sel(wb_cp0_reg_write_sel_i),
 	     .wb_cp0_reg_data(wb_cp0_reg_data_i),
 
 	     .cp0_reg_we_o(mem_cp0_reg_we_o),
 	     .cp0_reg_write_addr_o(mem_cp0_reg_write_addr_o),
+	     .cp0_reg_write_sel_o(mem_cp0_reg_write_sel_o),
 	     .cp0_reg_data_o(mem_cp0_reg_data_o),
 
 	     //送到MEM/WB模块的信息
@@ -499,6 +521,7 @@ module openmips(
 
 	     .excepttype_o(mem_excepttype_o),
 	     .cp0_epc_o(latest_epc),
+	     .cp0_ebase_o(latest_ebase),
 	     .is_in_delayslot_o(mem_is_in_delayslot_o),
 	     .current_inst_address_o(mem_current_inst_address_o)
     );
@@ -518,6 +541,7 @@ module openmips(
 
 		   .mem_cp0_reg_we(mem_cp0_reg_we_o),
 		   .mem_cp0_reg_write_addr(mem_cp0_reg_write_addr_o),
+		   .mem_cp0_reg_write_sel(mem_cp0_reg_write_sel_o),
 		   .mem_cp0_reg_data(mem_cp0_reg_data_o),
 
 		   //送到回写阶段的信息
@@ -527,6 +551,7 @@ module openmips(
 
 		   .wb_cp0_reg_we(wb_cp0_reg_we_i),
 		   .wb_cp0_reg_write_addr(wb_cp0_reg_write_addr_i),
+		   .wb_cp0_reg_write_sel(wb_cp0_reg_write_sel_i),
 		   .wb_cp0_reg_data(wb_cp0_reg_data_i)
     );
 
@@ -535,12 +560,13 @@ module openmips(
 
 	       .excepttype_i(mem_excepttype_o),
 	       .cp0_epc_i(latest_epc),
+	       .cp0_ebase_i(latest_ebase),
 
+	       //来自各阶段的暂停请求
 	       .stallreq_from_id(stallreq_from_id),
 	       .stallreq_from_pc(stallreq_pc),
-
-	       //来自执行阶段的暂停请求
 	       .stallreq_from_ex(stallreq_from_ex),
+
 	       .new_pc(new_pc),
 	       .flush(flush),
 	       .stall(stall)
@@ -553,7 +579,10 @@ module openmips(
 
 		     .we_i(wb_cp0_reg_we_i),
 		     .waddr_i(wb_cp0_reg_write_addr_i),
+		     .wsel_i(wb_cp0_reg_write_sel_i),
+
 		     .raddr_i(cp0_raddr_i),
+		     .rsel_i(cp0_rsel_i),
 		     .data_i(wb_cp0_reg_data_i),
 
 		     .excepttype_i(mem_excepttype_o),
@@ -569,6 +598,7 @@ module openmips(
 		     .epc_o(cp0_epc),
 		     .config_o(cp0_config),
 		     .prid_o(cp0_prid),
+		     .ebase_o(cp0_ebase),
 
 		     .timer_int_o(timer_int_o)
     );

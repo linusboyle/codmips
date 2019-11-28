@@ -11,15 +11,15 @@
       </db_ref>
    </db_ref_list>
    <zoom_setting>
-      <ZoomStartTime time="13201500000fs"></ZoomStartTime>
-      <ZoomEndTime time="13343700001fs"></ZoomEndTime>
-      <Cursor1Time time="13470000000fs"></Cursor1Time>
+      <ZoomStartTime time="70749471245fs"></ZoomStartTime>
+      <ZoomEndTime time="71050105751fs"></ZoomEndTime>
+      <Cursor1Time time="71000000000fs"></Cursor1Time>
    </zoom_setting>
    <column_width_setting>
-      <NameColumnWidth column_width="166"></NameColumnWidth>
-      <ValueColumnWidth column_width="60"></ValueColumnWidth>
+      <NameColumnWidth column_width="162"></NameColumnWidth>
+      <ValueColumnWidth column_width="56"></ValueColumnWidth>
    </column_width_setting>
-   <WVObjectSize size="35" />
+   <WVObjectSize size="38" />
    <wave_markers>
       <marker label="" time="2190000000" />
       <marker label="" time="2590000000" />
@@ -42,6 +42,26 @@
    <wvobject type="array" fp_name="/tb/dut/mycpu/mem_excepttype_o">
       <obj_property name="ElementShortName">mem_excepttype_o[31:0]</obj_property>
       <obj_property name="ObjectShortName">mem_excepttype_o[31:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb/dut/mycpu/int_i">
+      <obj_property name="ElementShortName">int_i[5:0]</obj_property>
+      <obj_property name="ObjectShortName">int_i[5:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb/dut/mycpu/cp0_cause">
+      <obj_property name="ElementShortName">cp0_cause[31:0]</obj_property>
+      <obj_property name="ObjectShortName">cp0_cause[31:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb/dut/mycpu/cp0_ebase">
+      <obj_property name="ElementShortName">cp0_ebase[31:0]</obj_property>
+      <obj_property name="ObjectShortName">cp0_ebase[31:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb/dut/mycpu/cp0_epc">
+      <obj_property name="ElementShortName">cp0_epc[31:0]</obj_property>
+      <obj_property name="ObjectShortName">cp0_epc[31:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb/dut/mycpu/cp0_status">
+      <obj_property name="ElementShortName">cp0_status[31:0]</obj_property>
+      <obj_property name="ObjectShortName">cp0_status[31:0]</obj_property>
    </wvobject>
    <wvobject type="array" fp_name="/tb/dut/mycpu/pc">
       <obj_property name="ElementShortName">pc[31:0]</obj_property>
@@ -156,26 +176,17 @@
       <obj_property name="CustomSignalColor">#00FFFF</obj_property>
       <obj_property name="UseCustomSignalColor">true</obj_property>
    </wvobject>
-   <wvobject type="logic" fp_name="/tb/dut/mycpu/mem_ce_rc">
-      <obj_property name="ElementShortName">mem_ce_rc</obj_property>
-      <obj_property name="ObjectShortName">mem_ce_rc</obj_property>
-      <obj_property name="WaveformStyle">STYLE_DIGITAL</obj_property>
-      <obj_property name="CustomSignalColor">#00FFFF</obj_property>
-      <obj_property name="UseCustomSignalColor">true</obj_property>
-   </wvobject>
-   <wvobject type="logic" fp_name="/tb/dut/mycpu/mem_we_rc">
-      <obj_property name="ElementShortName">mem_we_rc</obj_property>
-      <obj_property name="ObjectShortName">mem_we_rc</obj_property>
-      <obj_property name="CustomSignalColor">#00FFFF</obj_property>
-      <obj_property name="UseCustomSignalColor">true</obj_property>
-   </wvobject>
    <wvobject type="logic" fp_name="/tb/dut/mycpu/rc/ext_ram_ce_n">
       <obj_property name="ElementShortName">ext_ram_ce_n</obj_property>
       <obj_property name="ObjectShortName">ext_ram_ce_n</obj_property>
+      <obj_property name="CustomSignalColor">#00FFFF</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
    </wvobject>
    <wvobject type="logic" fp_name="/tb/dut/mycpu/rc/ext_ram_we_n">
       <obj_property name="ElementShortName">ext_ram_we_n</obj_property>
       <obj_property name="ObjectShortName">ext_ram_we_n</obj_property>
+      <obj_property name="CustomSignalColor">#00FFFF</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
    </wvobject>
    <wvobject type="array" fp_name="/tb/dut/mycpu/mem_data_i">
       <obj_property name="ElementShortName">mem_data_i[31:0]</obj_property>
@@ -187,6 +198,13 @@
       <obj_property name="ElementShortName">mem_data_o[31:0]</obj_property>
       <obj_property name="ObjectShortName">mem_data_o[31:0]</obj_property>
       <obj_property name="WaveformStyle">STYLE_DIGITAL</obj_property>
+      <obj_property name="CustomSignalColor">#00FFFF</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb/dut/mycpu/rc/mem_sel">
+      <obj_property name="ElementShortName">mem_sel[3:0]</obj_property>
+      <obj_property name="ObjectShortName">mem_sel[3:0]</obj_property>
+      <obj_property name="Radix">BINARYRADIX</obj_property>
       <obj_property name="CustomSignalColor">#00FFFF</obj_property>
       <obj_property name="UseCustomSignalColor">true</obj_property>
    </wvobject>
@@ -216,10 +234,5 @@
    <wvobject type="logic" fp_name="/tb/dut/mycpu/rc/uart_wrn">
       <obj_property name="ElementShortName">uart_wrn</obj_property>
       <obj_property name="ObjectShortName">uart_wrn</obj_property>
-   </wvobject>
-   <wvobject type="array" fp_name="/tb/dut/mycpu/rc/mem_sel">
-      <obj_property name="ElementShortName">mem_sel[3:0]</obj_property>
-      <obj_property name="ObjectShortName">mem_sel[3:0]</obj_property>
-      <obj_property name="Radix">BINARYRADIX</obj_property>
    </wvobject>
 </wave_config>

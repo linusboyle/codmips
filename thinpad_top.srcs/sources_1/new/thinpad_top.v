@@ -101,15 +101,11 @@ module thinpad_top(
 	else        reset_of_clkmain <= 1'b0;
     end
 
-    wire [5:0] int_i;
-    assign int_i = 5'b0;
     wire timer_int_o;
 
     openmips mycpu (
 	.clk(clk_main),
 	.rst(reset_of_clkmain),
-
-	.int_i(int_i),
 
 	.base_ram_data(base_ram_data),
 	.base_ram_addr(base_ram_addr), 

@@ -35,14 +35,16 @@
 
 module cp0_reg(
 
-	       input	wire										clk,
-	       input wire										rst,
-
+	       input wire clk,
+	       input wire rst,
 
 	       input wire                    we_i,
 	       input wire[4:0]               waddr_i,
-	       input wire[4:0]               raddr_i,
+	       input wire[2:0]               wsel_i,
 	       input wire[`RegBus]           data_i,
+
+	       input wire[4:0]               raddr_i,
+	       input wire[2:0]               rsel_i,
 
 	       input wire[31:0]              excepttype_i,
 	       input wire[5:0]               int_i,
@@ -57,8 +59,9 @@ module cp0_reg(
 	       output reg[`RegBus]           epc_o,
 	       output reg[`RegBus]           config_o,
 	       output reg[`RegBus]           prid_o,
+	       output reg[`RegBus]           ebase_o,
 
-	       output reg                   timer_int_o
+	       output reg                    timer_int_o
 
 );
 
@@ -66,14 +69,20 @@ module cp0_reg(
 	if (rst == `RstEnable) begin
 	    count_o <= `ZeroWord;
 	    compare_o <= `ZeroWord;
+
 	    //status寄存器的CU为0001，表示协处理器CP0存在
 	    status_o <= 32'b00010000000000000000000000000000;
 	    cause_o <= `ZeroWord;
 	    epc_o <= `ZeroWord;
-	    //config寄存器的BE为1，表示Big-Endian；MT为00，表示没有MMU
-	    config_o <= 32'b00000000000000001000000000000000;
+
+	    //config寄存器的BE为0，表示Little-Endian；MT为00，表示没有MMU
+	    config_o <= 32'b00000000000000000000000000000000;
+
 	    //制作者是L，对应的是0x48，类型是0x1，基本类型，版本号是1.0
 	    prid_o <= 32'b00000000010011000000000100000010;
+
+	    //EBase基址默认值为0x800000,单核CPUNum为0
+	    ebase_o <= 32'h80000000;
 	    timer_int_o <= `InterruptNotAssert;
 	end else begin
 	    count_o <= count_o + 1;
@@ -86,24 +95,41 @@ module cp0_reg(
 	    if (we_i == `WriteEnable) begin
 		case (waddr_i)
 		    `CP0_REG_COUNT:		begin
-			    count_o <= data_i;
+			    if (wsel_i == 3'b000) begin
+				count_o <= data_i;
+			    end
 			end
 		    `CP0_REG_COMPARE:	begin
-			    compare_o <= data_i;
-			    //count_o <= `ZeroWord;
-			    timer_int_o <= `InterruptNotAssert;
+			    if (wsel_i == 3'b000) begin
+				compare_o <= data_i;
+				//count_o <= `ZeroWord;
+				timer_int_o <= `InterruptNotAssert;
+			    end
 			end
 		    `CP0_REG_STATUS:	begin
-			    status_o <= data_i;
+			    if (wsel_i == 3'b000) begin
+				status_o <= data_i;
+			    end
 			end
 		    `CP0_REG_EPC:	begin
-			    epc_o <= data_i;
+			    if (wsel_i == 3'b000) begin
+				epc_o <= data_i;
+			    end
 			end
 		    `CP0_REG_CAUSE:	begin
-			    //cause寄存器只有IP[1:0]、IV、WP字段是可写的
-			    cause_o[9:8] <= data_i[9:8];
-			    cause_o[23] <= data_i[23];
-			    cause_o[22] <= data_i[22];
+			    if (wsel_i == 3'b000) begin
+				//cause寄存器只有IP[1:0]、IV、WP字段是可写的
+				cause_o[9:8] <= data_i[9:8];
+				cause_o[23] <= data_i[23];
+				cause_o[22] <= data_i[22];
+			    end
+			end
+		    `CP0_REG_PrId_Ebase:	begin
+			    if (wsel_i == 3'b001) begin
+				// EBase Register
+				// Only 29-12 writable
+				ebase_o[29:12] <= data_i[29:12];
+			    end
 			end
 		endcase  //case addr_i
 	    end
@@ -119,7 +145,6 @@ module cp0_reg(
 			end
 			status_o[1] <= 1'b1;
 			cause_o[6:2] <= 5'b00000;
-
 		    end
 		32'h00000008:		begin
 			if (status_o[1] == 1'b0) begin
@@ -188,26 +213,42 @@ module cp0_reg(
 	end else begin
 	    case (raddr_i)
 		`CP0_REG_COUNT:		begin
+		    if (rsel_i == 3'b000) begin
 			data_o <= count_o;
 		    end
+		end
 		`CP0_REG_COMPARE:	begin
+		    if (rsel_i == 3'b000) begin
 			data_o <= compare_o;
 		    end
+		end
 		`CP0_REG_STATUS:	begin
+		    if (rsel_i == 3'b000) begin
 			data_o <= status_o;
 		    end
+		end
 		`CP0_REG_CAUSE:	begin
+		    if (rsel_i == 3'b000) begin
 			data_o <= cause_o;
 		    end
+		end
 		`CP0_REG_EPC:	begin
+		    if (rsel_i == 3'b000) begin
 			data_o <= epc_o;
 		    end
-		`CP0_REG_PrId:	begin
+		end
+		`CP0_REG_PrId_Ebase:	begin
+		    if (rsel_i == 3'b000) begin
 			data_o <= prid_o;
+		    end else if (rsel_i == 3'b001) begin
+			data_o <= ebase_o;
 		    end
+		end
 		`CP0_REG_CONFIG:	begin
+		    if (rsel_i == 3'b000) begin
 			data_o <= config_o;
 		    end
+		end
 		default: 	begin end
 	    endcase  //case addr_i
 	end    //if

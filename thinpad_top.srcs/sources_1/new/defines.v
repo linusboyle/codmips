@@ -279,5 +279,5 @@
 `define CP0_REG_STATUS    5'b01100       //可读写
 `define CP0_REG_CAUSE    5'b01101        //只读
 `define CP0_REG_EPC    5'b01110          //可读写
-`define CP0_REG_PrId    5'b01111         //只读
+`define CP0_REG_PrId_Ebase    5'b01111   //只读
 `define CP0_REG_CONFIG    5'b10000       //只读
