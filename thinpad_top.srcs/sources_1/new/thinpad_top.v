@@ -209,18 +209,47 @@ module thinpad_top(
 	   ==========VGA==========
     */
     //图像输出演示，分辨率800x600@75Hz，像素时钟为50MHz
-    wire [11:0] hdata;
-    assign video_red = hdata < 266 ? 3'b111 : 0; //红色竖条
-    assign video_green = hdata < 532 && hdata >= 266 ? 3'b111 : 0; //绿色竖条
-    assign video_blue = hdata >= 532 ? 2'b11 : 0; //蓝色竖条
-    assign video_clk = clk_50M;
-    vga #(12, 800, 856, 976, 1040, 600, 637, 643, 666, 1, 1) vga800x600at75 (
-	.clk(clk_50M), 
-	.hdata(hdata), //横坐标
-	.vdata(),      //纵坐标
-	.hsync(video_hsync),
-	.vsync(video_vsync),
-	.data_enable(video_de)
+    // wire [11:0] hdata;
+    // assign video_red = hdata < 266 ? 3'b111 : 0; //红色竖条
+    // assign video_green = hdata < 532 && hdata >= 266 ? 3'b111 : 0; //绿色竖条
+    // assign video_blue = hdata >= 532 ? 2'b11 : 0; //蓝色竖条
+    // assign video_clk = clk_50M;
+    // vga #(12, 800, 856, 976, 1040, 600, 637, 643, 666, 1, 1) vga800x600at75 (
+	// .clk(clk_50M), 
+	// .hdata(hdata), //横坐标
+	// .vdata(),      //纵坐标
+	// .hsync(video_hsync),
+	// .vsync(video_vsync),
+	// .data_enable(video_de)
+    // );
+
+    wire[18:0] vga_pos;
+    wire vga_start;
+    wire vga_stop;
+    wire[7:0] video_pixel;
+
+    assign vga_start = 1'b1;
+    assign video_red = video_pixel[7:5];
+    assign video_green = video_pixel[4:2];
+    assign video_blue = video_pixel[1:0];
+
+    vga_ctrl vga_ctrl_inst(
+        .rst(reset_of_clk10M),
+        .clk_vga(clk_50M),
+        .clk_bram(clk_50M),
+        .start(vga_start),
+        .stop(vga_stop),
+        .pos(vga_pos),
+        .video_clk(video_clk),
+        .video_pixel(video_pixel)
+    );
+
+    vga #(12, 600, 656, 752, 800, 450, 490, 492, 525, 1, 1) vga600x450at60 (
+        .clk(clk_50M), 
+        .pos(vga_pos),
+        .hsync(video_hsync),
+        .vsync(video_vsync),
+        .data_enable(video_de)
     );
 
 endmodule
