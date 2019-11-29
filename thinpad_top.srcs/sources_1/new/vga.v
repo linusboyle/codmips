@@ -18,41 +18,51 @@ module vga
     input wire clk,
     output wire hsync,
     output wire vsync,
-    output reg [WIDTH - 1:0] hdata,
-    output reg [WIDTH - 1:0] vdata,
+    output reg[18:0] pos,
     output wire data_enable
 );
+    reg [WIDTH - 1:0] hdata;
+    reg [WIDTH - 1:0] vdata;
 
-// init
-initial begin
-    hdata <= 0;
-    vdata <= 0;
-end
-
-// hdata
-always @ (posedge clk)
-begin
-    if (hdata == (HMAX - 1))
+    // init
+    initial begin
         hdata <= 0;
-    else
-        hdata <= hdata + 1;
-end
-
-// vdata
-always @ (posedge clk)
-begin
-    if (hdata == (HMAX - 1)) 
-    begin
-        if (vdata == (VMAX - 1))
-            vdata <= 0;
-        else
-            vdata <= vdata + 1;
+        vdata <= 0;
+        pos <= 0;
     end
-end
 
-// hsync & vsync & blank
-assign hsync = ((hdata >= HFP) && (hdata < HSP)) ? HSPP : !HSPP;
-assign vsync = ((vdata >= VFP) && (vdata < VSP)) ? VSPP : !VSPP;
-assign data_enable = ((hdata < HSIZE) & (vdata < VSIZE));
+    // hdata
+    always @ (posedge clk)
+    begin
+        if (hdata == (HMAX - 1))
+            hdata <= 0;
+        else
+            hdata <= hdata + 1;
+    end
+
+    // vdata
+    always @ (posedge clk)
+    begin
+        if (hdata == (HMAX - 1)) 
+        begin
+            if (vdata == (VMAX - 1))
+                vdata <= 0;
+            else
+                vdata <= vdata + 1;
+        end
+    end
+
+    always @ (posedge clk)
+    begin
+        if (data_enable == 1'b1)
+            pos <= pos + 1;
+        else if (vdata == VSIZE)
+            pos <= 0;
+    end
+
+    // hsync & vsync & blank
+    assign hsync = ((hdata >= HFP) && (hdata < HSP)) ? HSPP : !HSPP;
+    assign vsync = ((vdata >= VFP) && (vdata < VSP)) ? VSPP : !VSPP;
+    assign data_enable = ((hdata < HSIZE) & (vdata < VSIZE));
 
 endmodule
