@@ -1,10 +1,10 @@
 -- Copyright 1986-2018 Xilinx, Inc. All Rights Reserved.
 -- --------------------------------------------------------------------------------
 -- Tool Version: Vivado v.2018.3 (lin64) Build 2405991 Thu Dec  6 23:36:41 MST 2018
--- Date        : Fri Nov 29 21:37:47 2019
--- Host        : porcupine-TM1701 running 64-bit Ubuntu 18.04.3 LTS
--- Command     : write_vhdl -force -mode synth_stub -rename_top blk_mem_gen_0 -prefix
---               blk_mem_gen_0_ blk_mem_gen_0_stub.vhdl
+-- Date        : Sun Dec  1 14:53:15 2019
+-- Host        : linusboyle.linusboyle-PC running 64-bit openSUSE Tumbleweed
+-- Command     : write_vhdl -force -mode synth_stub
+--               /home/linusboyle/dev/cod19grp44/thinpad_top.srcs/sources_1/ip/blk_mem_gen_0/blk_mem_gen_0_stub.vhdl
 -- Design      : blk_mem_gen_0
 -- Purpose     : Stub declaration of top-level module interface
 -- Device      : xc7a100tfgg676-2L

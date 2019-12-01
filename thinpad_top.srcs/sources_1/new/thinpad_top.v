@@ -276,7 +276,7 @@ module thinpad_top(
     assign video_blue = video_pixel[1:0];
 
     vga_ctrl vga_ctrl_inst(
-        .rst(reset_of_clk10M),
+        .rst(reset_btn),
         .clk_vga(clk_50M),
         .clk_bram(clk_50M),
         .start(vga_start),
