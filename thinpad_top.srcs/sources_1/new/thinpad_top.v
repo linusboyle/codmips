@@ -269,8 +269,10 @@ module thinpad_top(
     wire vga_start;
     wire vga_stop;
     wire[7:0] video_pixel;
+    
+    assign vga_stop = touch_btn[0];
 
-    assign vga_start = 1'b1;
+    assign vga_start = touch_btn[1];
     assign video_red = video_pixel[7:5];
     assign video_green = video_pixel[4:2];
     assign video_blue = video_pixel[1:0];
