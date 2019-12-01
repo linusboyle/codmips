@@ -57,7 +57,12 @@ module ram_ctrl(
 		input wire uart_tbre,        //发送数据标志
 		input wire uart_tsre,        //数据发送完毕标志
 
-		output wire[5:0] int_o
+		output wire[5:0] int_o,
+
+		input wire flash_done,
+		input wire[31:0] flash_data,
+		input wire[31:0] flash_addr,
+		input wire[3:0] flash_sel
 );
 
     wire mem_oe,
@@ -104,81 +109,91 @@ module ram_ctrl(
 	uart_rdn <= 1'b1;
 	uart_wrn <= 1'b1;
 	if (rst != `RstEnable) begin
-	    // from mem period
-	    if (mem_ce == `ChipEnable) begin
-		if (mem_addr == 32'hBFD003FC) begin
-		    // uart status
-		    if (mem_we == `WriteDisable) begin
-			// read
-			mem_bus <= uart_status;
-		    end
-		end else if (mem_addr == 32'hBFD003F8) begin
-		    // uart data
-		    if (mem_we == `WriteEnable) begin
-			// write uart
-			base_bus <= {24'b0, mem_data_i[7:0]};
-			base_wr <= 1'b1;
-			base_ram_ce_n <= 1'b1;
-			uart_wrn <= 1'b0;
-			uart_rdn <= 1'b1;
+	    if (flash_done == 1'b0) begin
+		// bootstrap
+		base_ram_ce_n <= 1'b0;
+		base_ram_we_n <= 1'b0;
+		base_wr <= 1'b1;
+		base_bus <= flash_data;
+		base_ram_addr <= flash_addr[21:2];
+		base_ram_be_n <= ~flash_sel;
+	    end else begin
+		// from mem period
+		if (mem_ce == `ChipEnable) begin
+		    if (mem_addr == 32'hBFD003FC) begin
+			// uart status
+			if (mem_we == `WriteDisable) begin
+			    // read
+			    mem_bus <= uart_status;
+			end
+		    end else if (mem_addr == 32'hBFD003F8) begin
+			// uart data
+			if (mem_we == `WriteEnable) begin
+			    // write uart
+			    base_bus <= {24'b0, mem_data_i[7:0]};
+			    base_wr <= 1'b1;
+			    base_ram_ce_n <= 1'b1;
+			    uart_wrn <= 1'b0;
+			    uart_rdn <= 1'b1;
+			end else begin
+			    // read uart
+			    base_wr <= 1'b0;
+			    base_ram_ce_n <= 1'b1;
+			    uart_wrn <= 1'b1;
+			    uart_rdn <= 1'b0;
+			    mem_bus <= uart_data;
+			end
+		    end else if (mem_addr[22] == 1'b1) begin
+			// extra ram
+			ext_ram_ce_n <= 1'b0;
+			if (mem_we == `WriteEnable) begin
+			    ext_ram_we_n <= 1'b0;
+			    ext_wr <= 1'b1;
+			    ext_ram_be_n <= sel;
+			    ext_ram_oe_n <= 1'b1;
+			    ext_bus <= mem_data_i;
+			end else begin
+			    ext_ram_we_n <= 1'b1;
+			    ext_wr <= 1'b0;
+			    ext_ram_oe_n <= 1'b0;
+			end
+			ext_ram_addr <= mem_addr[21:2];
+			mem_bus <= ext_ram_data;
 		    end else begin
-			// read uart
-			base_wr <= 1'b0;
-			base_ram_ce_n <= 1'b1;
-			uart_wrn <= 1'b1;
-			uart_rdn <= 1'b0;
-			mem_bus <= uart_data;
+			// base ram
+			base_ram_ce_n <= 1'b0;
+			if (mem_we == `WriteEnable) begin
+			    base_ram_we_n <= 1'b0;
+			    base_wr <= 1'b1;
+			    base_ram_be_n <= sel;
+			    base_ram_oe_n <= 1'b1;
+			    base_bus <= mem_data_i;
+			end else begin
+			    base_ram_we_n <= 1'b1;
+			    base_wr <= 1'b0;
+			    base_ram_oe_n <= 1'b0;
+			end
+			base_ram_addr <= mem_addr[21:2];
+			mem_bus <= base_ram_data;
 		    end
-		end else if (mem_addr[22] == 1'b1) begin
-		    // extra ram
-		    ext_ram_ce_n <= 1'b0;
-		    if (mem_we == `WriteEnable) begin
-			ext_ram_we_n <= 1'b0;
-			ext_wr <= 1'b1;
-			ext_ram_be_n <= sel;
-			ext_ram_oe_n <= 1'b1;
-			ext_bus <= mem_data_i;
-		    end else begin
-			ext_ram_we_n <= 1'b1;
-			ext_wr <= 1'b0;
-			ext_ram_oe_n <= 1'b0;
-		    end
-		    ext_ram_addr <= mem_addr[21:2];
-		    mem_bus <= ext_ram_data;
-		end else begin
-		    // base ram
-		    base_ram_ce_n <= 1'b0;
-		    if (mem_we == `WriteEnable) begin
-			base_ram_we_n <= 1'b0;
-			base_wr <= 1'b1;
-			base_ram_be_n <= sel;
-			base_ram_oe_n <= 1'b1;
-			base_bus <= mem_data_i;
-		    end else begin
-			base_ram_we_n <= 1'b1;
-			base_wr <= 1'b0;
-			base_ram_oe_n <= 1'b0;
-		    end
-		    base_ram_addr <= mem_addr[21:2];
-		    mem_bus <= base_ram_data;
 		end
-	    end
 
-	    if (pc_ce == `ChipEnable) begin
-		if (pc_addr[22] == 1'b1) begin
-		    ext_wr <= 1'b0;
-		    ext_ram_ce_n <= 1'b0;
-		    ext_ram_oe_n <= 1'b0;
-		    ext_ram_we_n <= 1'b1;
-		    ext_ram_addr <= pc_addr[21:2];
-		    pc_bus <= ext_ram_data;
-		end else begin
-		    base_wr <= 1'b0;
-		    base_ram_ce_n <= 1'b0;
-		    base_ram_oe_n <= 1'b0;
-		    base_ram_we_n <= 1'b1;
-		    base_ram_addr <= pc_addr[21:2];
-		    pc_bus <= base_ram_data;
+		if (pc_ce == `ChipEnable) begin
+		    if (pc_addr[22] == 1'b1) begin
+			ext_wr <= 1'b0;
+			ext_ram_ce_n <= 1'b0;
+			ext_ram_oe_n <= 1'b0;
+			ext_ram_we_n <= 1'b1;
+			ext_ram_addr <= pc_addr[21:2];
+			pc_bus <= ext_ram_data;
+		    end else begin
+			base_wr <= 1'b0;
+			base_ram_ce_n <= 1'b0;
+			base_ram_oe_n <= 1'b0;
+			base_ram_we_n <= 1'b1;
+			base_ram_addr <= pc_addr[21:2];
+			pc_bus <= base_ram_data;
+		    end
 		end
 	    end
 	end

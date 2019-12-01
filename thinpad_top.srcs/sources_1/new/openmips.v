@@ -35,7 +35,7 @@
 module openmips(
 
 		input wire	clk,
-		input wire	rst,
+		input wire	rst_ext,
 
 		//BaseRAM信号
 		inout wire[31:0] base_ram_data,  //BaseRAM数据，低8位与CPLD串口控制器共享
@@ -59,7 +59,12 @@ module openmips(
 		input wire uart_tbre,         //发送数据标志
 		input wire uart_tsre,         //数据发送完毕标志
 
-		output wire                    timer_int_o
+		input wire flash_done,
+		input wire[31:0] flash_data,
+		input wire[31:0] flash_addr,
+		input wire[3:0] flash_sel,
+
+		output wire timer_int_o
 );
 
     wire[`InstAddrBus] pc;
@@ -198,6 +203,9 @@ module openmips(
     wire[3:0] mem_sel;
     wire[`InstBus] mem_data_o;
 
+    wire rst;
+    assign rst = rst_ext | ~flash_done;
+
     //pc_reg例化
     pc_reg pc_reg0(
 		   .clk(clk),
@@ -215,7 +223,7 @@ module openmips(
     );
 
     ram_ctrl rc(
-		.rst(rst),
+		.rst(rst_ext),
 		.pc_addr(pc),
 		.pc_ce(pc_ce),
 		.pc_data(pc_data),
@@ -245,6 +253,11 @@ module openmips(
 		.uart_dataready(uart_dataready),
 		.uart_tbre(uart_tbre),
 		.uart_tsre(uart_tsre),
+
+		.flash_done(flash_done),
+		.flash_sel(flash_sel),
+		.flash_addr(flash_addr),
+		.flash_data(flash_data),
 
 		.int_o(int_i)
     );

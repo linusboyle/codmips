@@ -81,12 +81,12 @@ module thinpad_top(
 );
 
     // PLL分频示例
-    wire locked, clk_main, clk_20M;
+    wire locked, clk_main, clk_ext;
     pll_example clock_gen 
      (
       // Clock out ports
       .clk_out1(clk_main), // 时钟输出1，频率在IP配置界面中设置
-      .clk_out2(clk_20M), // 时钟输出2，频率在IP配置界面中设置
+      .clk_out2(clk_ext), // 时钟输出2，频率在IP配置界面中设置
       // Status and control signals
       .reset(reset_btn), // PLL复位输入
       .locked(locked), // 锁定输出，"1"表示时钟稳定，可作为后级电路复位
@@ -101,11 +101,42 @@ module thinpad_top(
 	else        reset_of_clkmain <= 1'b0;
     end
 
+    reg reset_of_clkext;
+    // 异步复位，同步释放
+    always@(posedge clk_ext or negedge locked) begin
+	if(~locked) reset_of_clkext <= 1'b1;
+	else        reset_of_clkext <= 1'b0;
+    end
+
+    wire [31:0] flash_addr, flash_data;
+    wire [3:0] flash_sel;
+    wire flash_done;
+
+    bios flash_ctrl (
+	.rst(reset_of_clkext),
+	.clk(clk_ext),
+
+	.flash_a(flash_a),      //Flash地址，a0仅在8bit模式有效，16bit模式无意义
+	.flash_d(flash_d),      //Flash数据
+	.flash_rp_n(flash_rp_n),         //Flash复位信号，低有效
+	.flash_vpen(flash_vpen),         //Flash写保护信号，低电平时不能擦除、烧写
+	.flash_ce_n(flash_ce_n),         //Flash片选信号，低有效
+	.flash_oe_n(flash_oe_n),         //Flash读使能信号，低有效
+	.flash_we_n(flash_we_n),         //Flash写使能信号，低有效
+	.flash_byte_n(flash_byte_n),       //Flash 8bit模式选择，低有效.在使用flash的16位模式时请设为1
+
+	.data(flash_data),
+	.addr(flash_addr),
+	.sel(flash_sel),
+
+	.done(flash_done)
+	);
+
     wire timer_int_o;
 
     openmips mycpu (
 	.clk(clk_main),
-	.rst(reset_of_clkmain),
+	.rst_ext(reset_of_clkmain),
 
 	.base_ram_data(base_ram_data),
 	.base_ram_addr(base_ram_addr), 
@@ -126,6 +157,12 @@ module thinpad_top(
 	.uart_dataready(uart_dataready),
 	.uart_tbre(uart_tbre),
 	.uart_tsre(uart_tsre),
+
+	.flash_data(flash_data),
+	.flash_addr(flash_addr),
+	.flash_sel(flash_sel),
+
+	.flash_done(flash_done),
 
 	.timer_int_o(timer_int_o)
     );
