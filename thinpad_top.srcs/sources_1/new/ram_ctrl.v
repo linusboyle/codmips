@@ -113,6 +113,7 @@ module ram_ctrl(
 		// bootstrap
 		base_ram_ce_n <= 1'b0;
 		base_ram_we_n <= 1'b0;
+		base_ram_oe_n <= 1'b1;
 		base_wr <= 1'b1;
 		base_bus <= flash_data;
 		base_ram_addr <= flash_addr[21:2];
