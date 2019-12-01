@@ -69,7 +69,7 @@ module bios(
 	    sel <= 4'b1100;
 	    addr_buf <= 21'b0;
 	end else begin
-	    if (addr_buf == 21'b000000000111111111111) begin // only copy 4k * 16bit data
+	    if (addr_buf == 21'b000000001111111111111) begin // only copy 8k * 16bit data
 		done <= 1'b1;
 		flash_ce_n <= 1'b1;
 		flash_rd <= 1'b0;
