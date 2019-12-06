@@ -292,6 +292,15 @@ module id(
 			alusel_o <= `EXE_RES_LOAD_STORE; reg1_read_o <= 1'b1;	reg2_read_o <= 1'b0;
 			wd_o <= inst_i[20:16]; instvalid <= `InstValid;
 		    end
+		`EXE_LWPC: begin
+		    if (inst_i[20:19] == 2'b01) begin
+			wreg_o <= `WriteEnable;		
+			aluop_o <= `EXE_LWPC_OP;
+			alusel_o <= `EXE_RES_LOAD_STORE; 
+			reg1_read_o <= 1'b0;	reg2_read_o <= 1'b0;
+			wd_o <= inst_i[25:21]; instvalid <= `InstValid;
+		    end
+		end
 		`EXE_SB:			begin
 			wreg_o <= `WriteDisable;		aluop_o <= `EXE_SB_OP;
 			reg1_read_o <= 1'b1;	reg2_read_o <= 1'b1; instvalid <= `InstValid;

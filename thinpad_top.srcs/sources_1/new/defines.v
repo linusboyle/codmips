@@ -95,6 +95,7 @@
 `define EXE_LHU  6'b100101
 `define EXE_LL  6'b110000
 `define EXE_LW  6'b100011
+`define EXE_LWPC  6'b111011
 `define EXE_LWL  6'b100010
 `define EXE_LWR  6'b100110
 `define EXE_SB  6'b101000
@@ -195,6 +196,7 @@
 `define EXE_LHU_OP  8'b11100101
 `define EXE_LL_OP  8'b11110000
 `define EXE_LW_OP  8'b11100011
+`define EXE_LWPC_OP  8'b11101111
 `define EXE_LWL_OP  8'b11100010
 `define EXE_LWR_OP  8'b11100110
 `define EXE_PREF_OP  8'b11110011

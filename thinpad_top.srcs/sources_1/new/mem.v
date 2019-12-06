@@ -203,6 +203,13 @@ module mem(
 			mem_sel_o <= 4'b1111;
 			mem_ce_o <= `ChipEnable;
 		    end
+		`EXE_LWPC_OP: begin
+		    mem_addr_o <= mem_addr_i;
+		    mem_we <= `WriteDisable;
+		    wdata_o <= mem_data_i;
+		    mem_sel_o <= 4'b1111;
+		    mem_ce_o <= `ChipEnable;
+		end
 		`EXE_SB_OP: begin
 			mem_addr_o <= mem_addr_i;
 			mem_we <= `WriteEnable;

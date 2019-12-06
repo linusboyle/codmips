@@ -77,7 +77,9 @@ module ex(
     assign aluop_o = aluop_i;
 
     //mem_addr传递到访存阶段，是加载、存储指令对应的存储器地址
-    assign mem_addr_o = reg1_i + {{16{inst_i[15]}}, inst_i[15:0]};
+    assign mem_addr_o = aluop_i == `EXE_LWPC_OP ? 
+	current_inst_address_i + {{11{inst_i[18]}}, inst_i[18:0], 2'b0}
+	: reg1_i + {{16{inst_i[15]}}, inst_i[15:0]};
 
     //将两个操作数也传递到访存阶段，也是为记载、存储指令准备的
     assign reg2_o = reg2_i;
